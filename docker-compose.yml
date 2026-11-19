@@ -1,0 +1,13 @@
+#version: '3.8'
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: raq_qdrant
+    ports: 
+      - "6333:6333"  # HTTP API Qdranta
+      - "6334:6334"  # gRPC API Qdranta
+    volumes:
+      - ./qdrant:/qdrant/storage
+    restart: unless-stopped
+
