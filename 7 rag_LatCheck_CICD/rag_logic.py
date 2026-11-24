@@ -1,3 +1,4 @@
+import os
 import time # za pomocą tego będziemy obliczacz opóznienia
 import torch
 from transformers import AutoTokenizer, AutoModel, AutoModelForSeq2SeqLM
@@ -38,7 +39,8 @@ def get_embedding(text):
 
 # --- POŁĄCZENIE Z QDRANTEM W DOCKERZE ---
 print("Łączenie z bazą Qdrant...")
-client = QdrantClient(host="localhost", port=6333)
+qdrant_host = os.getenv("QDRANT_HOST", "localhost")
+client = QdrantClient(host=qdrant_host, port=6333)
 collection_name = "pdf_rag_collection"
 
 
@@ -104,7 +106,7 @@ def ask_rag_pipeline(user_query: str, top_k: int = 2):
     for i, res in enumerate(retrieved_results):
         print(f"  -> [{i+1}] Plik: {res['source']} (Chunk #{res['chunk_index']}, score: {res['score']:.4f})")
         print(f"      Fragment: \"{res['text'][:120]}...\"\n")
-        sources.append({"source": res['source'], "score": float(res['score'])})\
+        sources.append({"source": res['source'], "score": float(res['score'])})
 
     final_answer = generate_answer(user_query, retrieved_results)
 
@@ -121,3 +123,4 @@ def ask_rag_pipeline(user_query: str, top_k: int = 2):
         "sources": sources,
         "latency_ms": round(elapsed_ms, 2)
     }
+
