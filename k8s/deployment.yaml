@@ -22,7 +22,7 @@ spec:
         - containerPort: 8000
         env:
         - name: QDRANT_HOST
-          value: "host.docker.internal"
+          value: "qdrant"
         - name: PYTHONUNBUFFERED
           value: "1"
         resources:
