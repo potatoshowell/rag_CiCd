@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: rag-app
-        image: localhost/rag-app:latest
-        imagePullPolicy: Always
+        image: localhost/rag-app:v3
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8000
         env:
@@ -25,6 +25,24 @@ spec:
           value: "qdrant"
         - name: PYTHONUNBUFFERED
           value: "1"
+        startupProbe:
+          httpGet:
+            path: /health/live
+            port: 8000
+          failureThreshold: 30
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8000
+          periodSeconds: 15
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8000
+          periodSeconds: 10
+          timeoutSeconds: 3
         resources:
           limits:
             memory: "4Gi"
